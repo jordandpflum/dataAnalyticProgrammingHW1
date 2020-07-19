@@ -1,6 +1,7 @@
 import re
 from collections import defaultdict
 import math
+import numpy as np
 
 quotesRaw = open('Data/quotes.txt', 'r')
 
@@ -65,22 +66,10 @@ def compileQuotes(quotesRaw):
 
 quotes = compileQuotes(quotesRaw)
 
+def collapseLst(lst):
+    return str(''.join(lst))
 
 def extractQuoteWords(quote):
-    """
-    Extract words of quote from quote+author
-
-    Parameters
-    ----------
-    quote = str, quote of the form "Quote - Author"
-
-    Returns
-    -------
-    lst, list of words in quote
-    """
-    return quote.split('. - ')[0].lower().split(" ")
-
-def extractQuoteAuthor(quote):
     """
     Extract author of quote from quote+author
 
@@ -90,16 +79,16 @@ def extractQuoteAuthor(quote):
 
     Returns
     -------
-    lst, list of author name
+    lst, list strings of words contained in the quote
     """
-    return quote.split('. - ')[1].lower().split(" ")
-
-
-def extractAllQuotes(quotes):
-    for quote in quotes:
-        print(quote)
-        print(extractQuoteWords(quote))
-    pass
+    words = quote.split(" ")
+    quote_alt = []
+    for word in words:
+        matches = re.findall('[a-zA-Z]', word)
+        word_alt = collapseLst(matches)
+        if len(word_alt) > 0:
+            quote_alt.append(word_alt.lower())
+    return quote_alt
 
 
 def buildPostingListDict(quotes):
@@ -118,7 +107,6 @@ def buildPostingListDict(quotes):
     postingListDict = {}
     for quote in quotes:
         simpQuote = extractQuoteWords(quote)
-        simpQuote.extend(extractQuoteAuthor(quote))
         postingListDict[quote] = defaultdict(int)
         for word in simpQuote:
             postingListDict[quote][word] += 1
@@ -157,13 +145,13 @@ def buildReversePostingListDict(quotes):
 postingListDict = buildPostingListDict(quotes)
 
 # Testing
-# print(postingListDict["The heart has its reasons, of which the mind knows nothing. - Blaise Pascal"])
+print(postingListDict["The heart has its reasons, of which the mind knows nothing. - Blaise Pascal"])
 
 
 reversePostingListDict = buildReversePostingListDict(quotes)
 
 
-# print(reversePostingListDict["entertainer"])
+print(reversePostingListDict["entertainer"])
 
 
 def TF_IDF(word, quote, quotes):
