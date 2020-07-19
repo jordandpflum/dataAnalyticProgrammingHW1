@@ -6,6 +6,17 @@ quotesRaw = open('Data/quotes.txt', 'r')
 
 
 def oddNum(num):
+    """
+    Deterimine if number is odd or even
+
+    Parameters
+    ----------
+    num = int, a number
+
+    Returns
+    -------
+    Boolean :  bool, True if number is odd, False if number is even
+    """
     if (num % 2) == 0:
         return False
     else:
@@ -13,6 +24,17 @@ def oddNum(num):
 
 
 def compileQuotes(quotesRaw):
+    """
+    Compile txt file of quotes into list of the form ["Quote - Author",...]
+
+    Parameters
+    ----------
+    quotesRaw = raw txt file of quotes read in
+
+    Returns
+    -------
+    quotes :  lst, list of quotes
+    """
     # Initialize Quotes
     quotes = []
 
@@ -41,14 +63,36 @@ def compileQuotes(quotesRaw):
 
     return quotes
 
-
-# print(compileQuotes(quotesRaw))
-
 quotes = compileQuotes(quotesRaw)
 
 
 def extractQuoteWords(quote):
+    """
+    Extract words of quote from quote+author
+
+    Parameters
+    ----------
+    quote = str, quote of the form "Quote - Author"
+
+    Returns
+    -------
+    lst, list of words in quote
+    """
     return quote.split('. - ')[0].lower().split(" ")
+
+def extractQuoteAuthor(quote):
+    """
+    Extract author of quote from quote+author
+
+    Parameters
+    ----------
+    quote = str, quote of the form "Quote - Author"
+
+    Returns
+    -------
+    lst, list of author name
+    """
+    return quote.split('. - ')[1].lower().split(" ")
 
 
 def extractAllQuotes(quotes):
@@ -59,9 +103,22 @@ def extractAllQuotes(quotes):
 
 
 def buildPostingListDict(quotes):
+    """
+    Build posting list dicitonary of compiled Quotes of the form "Quote - Author"
+
+    Parameters
+    ----------
+    quotes = lst, list of quotes of the form ["Quote - Author",...]
+
+    Returns
+    -------
+    postingListDict, list representing posting list dicitonary of compiled Quotes
+                     of the form postingListDict[quote][word] = num of times word appears in that quote
+    """
     postingListDict = {}
     for quote in quotes:
         simpQuote = extractQuoteWords(quote)
+        simpQuote.extend(extractQuoteAuthor(quote))
         postingListDict[quote] = defaultdict(int)
         for word in simpQuote:
             postingListDict[quote][word] += 1
@@ -70,6 +127,18 @@ def buildPostingListDict(quotes):
 
 
 def buildReversePostingListDict(quotes):
+    """
+    Build reverse posting list dicitonary of compiled Quotes of the form "Quote - Author"
+
+    Parameters
+    ----------
+    quotes = lst, list of quotes of the form ["Quote - Author",...]
+
+    Returns
+    -------
+    reversePostingListDict, list representing reverse posting list dicitonary of compiled Quotes
+                     of the form reversePostingListDict[word][quote] = num of times word appears in that quote
+    """
     reversePostingListDict = {}
     for quote in quotes:
         simpQuote = extractQuoteWords(quote)
@@ -97,15 +166,20 @@ reversePostingListDict = buildReversePostingListDict(quotes)
 # print(reversePostingListDict["entertainer"])
 
 
-def TF(word, postingListDict_quote):
-    pass
-
-
-def IDF(word, postingListDict_quote):
-    pass
-
-
 def TF_IDF(word, quote, quotes):
+    """
+    Calculate TF-IDF of word in quote
+
+    Parameters
+    ----------
+    word = str, string of word for TF-IDF calculation
+    quote = str, string of quote for TF-IDF calculation
+    quotes = lst, list of quotes of the form ["Quote - Author",...]
+
+    Returns
+    -------
+    tfidf_val, TF-IDF value of word in quote
+    """
     postingListDict = buildPostingListDict(quotes)
     reversePostingListDict = buildReversePostingListDict(quotes)
 
@@ -129,7 +203,20 @@ print(tfidf_val)
 
 
 def quoteSearchSingleWord(word, quotes):
-    postingListDict = buildPostingListDict(quotes)
+    """
+    Search quotes for word, returning dictionary whose keys are quotes containing word and values
+    the TF-IDF calculation of that word and quote
+
+    Parameters
+    ----------
+    word = str, string of word to search for in quotes
+    quotes = lst, list of quotes of the form ["Quote - Author",...]
+
+    Returns
+    -------
+    quoteSearchResult, dictionary whose keys are quotes containing word and values
+                       the TF-IDF calculation of that word and quote
+    """
     reversePostingListDict = buildReversePostingListDict(quotes)
 
     quoteSearchResult = {}
@@ -146,7 +233,20 @@ print(singleSearchResult)
 
 
 def quoteSearchMultipleWords(words, quotes):
-    postingListDict = buildPostingListDict(quotes)
+    """
+    Search quotes for multples words, returning dictionary whose keys are quotes containing one or more of the
+    input words and values the sum of TF-IDF calculation of those word and quote
+
+    Parameters
+    ----------
+    words = lst, list of strings of words to search for in quotes
+    quotes = lst, list of quotes of the form ["Quote - Author",...]
+
+    Returns
+    -------
+    quoteSearchResult, dictionary whose keys are quotes containing word and values
+                       the TF-IDF calculation of that word and quote
+    """
     reversePostingListDict = buildReversePostingListDict(quotes)
 
     quoteSearchResult = {}
