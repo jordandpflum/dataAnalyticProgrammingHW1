@@ -51,6 +51,18 @@ def sortTuple(lstTuples, element):
 
 
 def extractVoterTableInfo(textFile):
+    """
+    Extraact Voter Information by Country from Table in HTML File
+
+    Parameters
+    ----------
+    textFile = textFile of html file read in
+
+    Returns
+    -------
+    sortedCounties :  lst, sorted list of tuples of counties and their respective
+                      number of democrat and republican votes
+    """
     # Initialize Field Locations
     countyHeader = 1
     republicanHeader = 2
