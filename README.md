@@ -1,2 +1,2 @@
-# decisionAnalysisHW1
-Github Repository for HW1 of Decision Analysis
+# dataAnalyticProgrammingHW1
+Github Repository for HW1 of Data Analytics Programming
