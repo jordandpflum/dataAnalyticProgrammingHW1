@@ -1,7 +1,3 @@
-import re
-
-santaTweets = open('Data/Santa.txt', 'r')
-
 from collections import defaultdict
 import math
 
@@ -72,17 +68,20 @@ def cosine(tweet1, tweet2, window):
     for phrase1, appearances1 in tweet1_dict.items():
         for phrase2, appearances2 in tweet2_dict.items():
             if phrase1 == phrase2:
-                if appearances1 == 1 or appearances2 == 1:
-                    matches += max([appearances1, appearances2])
-                else:
-                    matches += appearances1 * appearances2
-
+                matches += appearances1 * appearances2
     cosine_value = matches / math.sqrt((n1 * n2))
     return cosine_value
 
 # Testing
 tweet1 = "SPECIAL SECRET HEARTS: A Child's Introduction to Dementia and Pink Curls - A Santa ... - http://t.co/UWCdc8FA9a http://t.co/meexKLGTKl"
 tweet2 = "RT @BuyBookstore: SPECIAL SECRET HEARTS: A Child's Introduction to Dementia and Pink Curls - A Santa ... - http://t.co/UWCdc8FA9a http://t."
+window = 3
+
+print(cosine(tweet1, tweet2, window))
+
+# Test to show different matches calculation
+tweet1 = "This is a random This is a nothing This is a Test"
+tweet2 = "This is a random1 This is a nothing1 This is a Test1"
 window = 3
 
 print(cosine(tweet1, tweet2, window))
@@ -141,25 +140,24 @@ def near_duplicate_analysis_tweets(tweets, window, duplicateThreshold):
     near_duplicate_tweets = []
     num_tweets = len(tweet_collection)
 
-    # Loop Through Tweets, ignoring duplicates and avoiding repeat analysis of tweets
+    # Loop Through Tweets, avoiding duplicates and avoiding repeat analysis of tweets
     for tweet1_index in range(num_tweets):
-        for tweet2_index in range(tweet1_index, num_tweets):
-            if tweet1_index != tweet2_index:
+        for tweet2_index in range(tweet1_index + 1, num_tweets):
+            # Store Both Tweets To Analyze
+            tweet1 = tweet_collection[tweet1_index - 1]
+            tweet2 = tweet_collection[tweet2_index - 1]
 
-                # If tweets are near duplicates, add them to list and report cosine value
-                tweet1 = tweet_collection[tweet1_index - 1]
-                tweet2 = tweet_collection[tweet2_index - 1]
-                if near_duplicate(tweet1, tweet2, window, duplicateThreshold):
-                    message = str("Tweet: " + tweet_collection[tweet1_index] + " is a near duplicate to Tweet: "
-                                  + tweet_collection[tweet2_index] + " with a Cosine Value of: " +
-                                  str(cosine(tweet1, tweet2, window))
-                                  )
-                    near_duplicate_tweets.append(message)
+            # If Tweets near duplicates, add to list
+            if near_duplicate(tweet1, tweet2, window, duplicateThreshold):
+                message = str("Tweet: " + tweet_collection[tweet1_index] + " is a near duplicate to Tweet: "
+                              + tweet_collection[tweet2_index] + " with a Cosine Value of: " +
+                              str(cosine(tweet1, tweet2, window))
+                              )
+                near_duplicate_tweets.append(message)
 
     return near_duplicate_tweets
 
-
-
+# Testing
 tweets = open('Data/Santa.txt', 'r')
 window = 3
 duplicateThreshold = 0.5

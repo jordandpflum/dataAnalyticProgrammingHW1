@@ -1,10 +1,5 @@
-import re
 from collections import defaultdict
 import math
-import numpy as np
-
-quotesRaw = open('Data/quotes.txt', 'r')
-
 
 def oddNum(num):
     """
@@ -64,14 +59,27 @@ def compileQuotes(quotesRaw):
 
     return quotes
 
+quotesRaw = open('Data/quotes.txt', 'r')
 quotes = compileQuotes(quotesRaw)
+#print(quotes)
 
 def collapseLst(lst):
+    """
+    Collapse list with no spaces
+
+    Parameters
+    ----------
+    lst: lst, list to be collapsed
+
+    Returns
+    -------
+    lst, a collapsed list
+    """
     return str(''.join(lst))
 
 def extractQuoteWords(quote):
     """
-    Extract author of quote from quote+author
+    Extract author and quote from quote+author
 
     Parameters
     ----------
@@ -90,6 +98,8 @@ def extractQuoteWords(quote):
             quote_alt.append(word_alt.lower())
     return quote_alt
 
+# Testing
+print(extractQuoteWords("The heart has its reasons, of which the mind knows nothing. - Blaise Pascal"))
 
 def buildPostingListDict(quotes):
     """
@@ -112,7 +122,9 @@ def buildPostingListDict(quotes):
             postingListDict[quote][word] += 1
 
     return postingListDict
-
+# Testing
+postingListDict = buildPostingListDict(quotes)
+#print(postingListDict["The heart has its reasons, of which the mind knows nothing. - Blaise Pascal"])
 
 def buildReversePostingListDict(quotes):
     """
@@ -142,16 +154,12 @@ def buildReversePostingListDict(quotes):
     return reversePostingListDict
 
 
-postingListDict = buildPostingListDict(quotes)
+
 
 # Testing
-print(postingListDict["The heart has its reasons, of which the mind knows nothing. - Blaise Pascal"])
+#reversePostingListDict = buildReversePostingListDict(quotes)
+#print(reversePostingListDict["entertainer"])
 
-
-reversePostingListDict = buildReversePostingListDict(quotes)
-
-
-print(reversePostingListDict["entertainer"])
 
 
 def TF_IDF(word, quote, quotes):
@@ -187,7 +195,7 @@ tfidf_val = TF_IDF(word="entertainer",
                    quote="An actor is at most a poet and at least an entertainer. - Marlon Brando",
                    quotes=quotes
                    )
-print(tfidf_val)
+#print(tfidf_val)
 
 
 def quoteSearchSingleWord(word, quotes):
@@ -207,17 +215,23 @@ def quoteSearchSingleWord(word, quotes):
     """
     reversePostingListDict = buildReversePostingListDict(quotes)
 
-    quoteSearchResult = {}
-    for quote in reversePostingListDict[word].keys():
-        quoteSearchResult[quote] = TF_IDF(word, quote, quotes)
+    # Error Handling - word not in any of the quotes
+    if reversePostingListDict.get(word) == None:
+        quoteSearchResult = str("Word does not appear in any of the quotes. Try a different word")
+    else:
+        quoteSearchResult = {}
+        for quote in reversePostingListDict[word].keys():
+            quoteSearchResult[quote] = TF_IDF(word, quote, quotes)
 
     return quoteSearchResult
 
+# Testing
+#UserChoice = input('Please enter word you wish to search for in quotes: ')
 
-singleSearchResult = quoteSearchSingleWord(word="entertainer",
-                                           quotes=quotes
-                                           )
-print(singleSearchResult)
+#singleSearchResult = quoteSearchSingleWord(word=UserChoice,
+#                                           quotes=quotes
+#                                           )
+#print(singleSearchResult)
 
 
 def quoteSearchMultipleWords(words, quotes):
@@ -237,33 +251,73 @@ def quoteSearchMultipleWords(words, quotes):
     """
     reversePostingListDict = buildReversePostingListDict(quotes)
 
-    quoteSearchResult = {}
+    quoteSearchResult = defaultdict(int)
     for word in words:
         if reversePostingListDict.get(word) == None:
             pass
         else:
             for quote in reversePostingListDict[word].keys():
-                if quoteSearchResult.get(quote) == None:
-                    quoteSearchResult[quote] = TF_IDF(word, quote, quotes)
-                else:
-                    quoteSearchResult[quote] += TF_IDF(word, quote, quotes)
+                quoteSearchResult[quote] += TF_IDF(word, quote, quotes)
 
     return quoteSearchResult
 
 
-multipleSearchResult = quoteSearchMultipleWords(words=["heart", "mind", "disease"],
-                                                quotes=quotes
-                                                )
-print(multipleSearchResult)
+def collapseLst(lst):
+    """
+    Collapse list with no spaces
 
-tfidf_val_1 = TF_IDF(word="heart",
-                   quote="The heart has its reasons, of which the mind knows nothing. - Blaise Pascal",
-                   quotes=quotes
-                   )
+    Parameters
+    ----------
+    lst: lst, list to be collapsed
 
-tfidf_val_2 = TF_IDF(word="mind",
-                   quote="The heart has its reasons, of which the mind knows nothing. - Blaise Pascal",
-                   quotes=quotes
-                   )
+    Returns
+    -------
+    lst, a collapsed list
+    """
+    return str(''.join(lst))
 
-print(sum([tfidf_val_1, tfidf_val_2]))
+
+def getWordsFromUserChoice(userChoice):
+    """
+    Extract input words from User Choice
+
+    Parameters
+    ----------
+    userChoice = str, representing words user wants to search for
+
+    Returns
+    -------
+    quote_alt, list of words to search for
+    """
+    words = userChoice.split(",")
+    quote_alt = []
+    for word in words:
+        matches = re.findall('[a-zA-Z]', word)
+        word_alt = collapseLst(matches)
+        if len(word_alt) > 0:
+            quote_alt.append(word_alt.lower())
+    return quote_alt
+
+
+# Testing
+# UserChoice = input('Please enter word you wish to search for in quotes (seperate words by commas): ')
+#
+# #words=["heart", "mind", "disease"]
+#
+# multipleSearchResult = quoteSearchMultipleWords(words=getWordsFromUserChoice(UserChoice),
+#                                                 quotes=quotes
+#                                                )
+# print(multipleSearchResult)
+#
+# # Double-Check TF-IDF Value for first element of multipleSearchResult
+# tfidf_val_1 = TF_IDF(word="heart",
+#                    quote="The heart has its reasons, of which the mind knows nothing. - Blaise Pascal",
+#                    quotes=quotes
+#                    )
+#
+# tfidf_val_2 = TF_IDF(word="mind",
+#                    quote="The heart has its reasons, of which the mind knows nothing. - Blaise Pascal",
+#                    quotes=quotes
+#                    )
+#
+# print(sum([tfidf_val_1, tfidf_val_2]))

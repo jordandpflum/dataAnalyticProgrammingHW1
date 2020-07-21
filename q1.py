@@ -1,9 +1,11 @@
 import random
 
+
 class rpsGame:
     """
     Class object Rock Paper Scissors Game.
     """
+
     def __init__(self):
         """
         Initialize rpsGame
@@ -69,7 +71,8 @@ class rpsGame:
             - Report round outcome to user
         """
         # Obtain Result of Round (dictated by __rules__)
-        result = self.__rules__(player1_choice = self._humanPlayer._latestChoice, player2_choice = self._computerPlayer._latestChoice)
+        result = self.__rules__(player1_choice=self._humanPlayer._latestChoice,
+                                player2_choice=self._computerPlayer._latestChoice)
 
         # Interpret Outcome of Round in terms of computer and human
         if result == "Player 1":
@@ -157,6 +160,7 @@ class rpsGame:
         """
         InnerClass object (player) of rpsGame.
         """
+
         def __init__(self, _type):
             """
             Initialize rpsGame
@@ -245,7 +249,6 @@ class rpsGame:
             else:
                 self.__playHumanTurn__(choice)
 
-
         def __playHumanTurn__(self, choice):
             """
             Play Turn of Human Player
@@ -267,6 +270,28 @@ class rpsGame:
             """
             choice = self.computerLogic(opponent)
             self.__inputChoice__(choice)
+
+        def __optimalChoice__(self, opponentChoice):
+            """
+            Optimal Choice given knowledge of opponents next choice opponent
+
+            Parameters
+            ----------
+            opponentChoice: str, representing opponents choice
+
+            Returns
+            -------
+            optimalChoice :  str, representing optimal choice
+            """
+
+            if opponentChoice == "Rock":
+                optimalChoice = "Paper"
+            elif opponentChoice == "Paper":
+                optimalChoice = "Scissors"
+            elif opponentChoice == "Scissors":
+                optimalChoice = "Rock"
+
+            return optimalChoice
 
         def computerLogic(self, opponent):
             """
@@ -290,7 +315,7 @@ class rpsGame:
             for choice, numChoicePlayed in opponent._history.items():
                 if numChoicePlayed > largest_value:
                     # Create new topChoice dict
-                    topChoice = {choice : numChoicePlayed}
+                    topChoice = {choice: numChoicePlayed}
 
                     # Update Largest Value Choice
                     largest_value = numChoicePlayed
@@ -298,133 +323,52 @@ class rpsGame:
                 elif numChoicePlayed == largest_value:
                     topChoice[choice] = numChoicePlayed
 
+                opponentChoice = random.choice(list(topChoice.keys()))
+                computerChoice = self.__optimalChoice__(opponentChoice)
 
-            # NOTE: Can probaly take this if out and just keep else. Check later.
-            if len(topChoice) == 1:
-                choice = list(topChoice.keys())[0]
-            else:
-                choice = random.choice(list(topChoice.keys()))
-            return choice
+            return computerChoice
 
 # Testing
+# Initialize Rock Paper Scissors Game
 game = rpsGame()
 print("Round 1")
-game.__playTurn__("Rock")
+UserChoice = input('Please enter your choice (Rock, Paper, or Scissors): ')
+game.__playTurn__(UserChoice)
 #game.__seeResults__()
 #game.__seeGameHistory__()
 
 print("Round 2")
-game.__playTurn__("Rock")
+UserChoice = input('Please enter your choice (Rock, Paper, or Scissors): ')
+game.__playTurn__(UserChoice)
 #game.__seeResults__()
 #game.__seeGameHistory__()
 
 print("Round 3")
-game.__playTurn__("Paper")
+UserChoice = input('Please enter your choice (Rock, Paper, or Scissors): ')
+game.__playTurn__(UserChoice)
 #game.__seeResults__()
 #game.__seeGameHistory__()
 
 print("Round 4")
-game.__playTurn__("Paper")
+UserChoice = input('Please enter your choice (Rock, Paper, or Scissors): ')
+game.__playTurn__(UserChoice)
 #game.__seeResults__()
 #game.__seeGameHistory__()
 
 print("Round 5")
-game.__playTurn__("Paper")
+UserChoice = input('Please enter your choice (Rock, Paper, or Scissors): ')
+game.__playTurn__(UserChoice)
 #game.__seeResults__()
 #game.__seeGameHistory__()
 
 print("Round 6")
-game.__playTurn__("Scissors")
+UserChoice = input('Please enter your choice (Rock, Paper, or Scissors): ')
+game.__playTurn__(UserChoice)
 #game.__seeResults__()
 #game.__seeGameHistory__()
 
-print("Round 7")
-game.__playTurn__("Scissors")
-#game.__seeResults__()
-#game.__seeGameHistory__()
-
-print("Round 8")
-game.__playTurn__("Scissors")
-#game.__seeResults__()
-#game.__seeGameHistory__()
-
-print("Round 9")
-game.__playTurn__("Scissors")
-#game.__seeResults__()
-#game.__seeGameHistory__()
 
 game.__quitGame__()
-
-
-
-
-
-
-
-# Testing
-game = rpsGame()
-game.__playTurn__("Rock")
-game.__seeResults__()
-game.__seeGameHistory__()
-
-game.__playTurn__("Rock")
-game.__seeResults__()
-game.__seeGameHistory__()
-
-game.__playTurn__("Rock")
-game.__seeResults__()
-game.__seeGameHistory__()
-
-game.__playTurn__("Rock")
-game.__seeResults__()
-game.__seeGameHistory__()
-
-game.__playTurn__("Rock")
-game.__seeResults__()
-game.__seeGameHistory__()
-
-game.__playTurn__("Rock")
-game.__seeResults__()
-game.__seeGameHistory__()
-
-game.__playTurn__("Rock")
-game.__seeResults__()
-game.__seeGameHistory__()
-
-game.__playTurn__("Rock")
-game.__seeResults__()
-game.__seeGameHistory__()
-
-game.__playTurn__("Rock")
-game.__seeResults__()
-game.__seeGameHistory__()
-
-game.__quitGame__()
-
-
-
-
-
-#rpsGame().__seeGameHistory__()
-
-
-'''
-# Create Players
-player1 = Player(_type="Human")
-player2 = Player(_type="Computer")
-
-
-player1.__playTurn__("Rock")
-player1.__seePlayerHistory__()
-
-player2.__playTurn__("Rock")
-player2.__seePlayerHistory__()
-'''
-
-
-
-
-
 
 
 

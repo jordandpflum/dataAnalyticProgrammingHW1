@@ -76,7 +76,7 @@ def extractVoterTableInfo(textFile):
 
     # Read all lines of file
     line = textFile.readline()
-    while line is not '':
+    while line != '':
         # Strip white space before and after line
         line = line.rstrip()
         line = line.lstrip()
